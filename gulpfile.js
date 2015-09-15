@@ -4,7 +4,6 @@ var jshint = require('gulp-jshint')
 var jsonlint = require('gulp-jsonlint')
 var standard = require('gulp-standard')
 var webpack = require('webpack')
-var ngAnnotatePlugin = require('ng-annotate-webpack-plugin')
 var webpackConfig = require('./webpack.config').webpack
 var webpackStatusConfig = require('./res/common/status/webpack.config')
 var gettext = require('gulp-angular-gettext')
@@ -130,12 +129,6 @@ gulp.task("webpack:build", function (callback) {
         "NODE_ENV": JSON.stringify('production')
       }
     })
-    //new webpack.optimize.DedupePlugin(),
-    //new ngAnnotatePlugin({
-    //  add: true,
-    //})
-    // TODO: mangle when ngmin works
-    //new webpack.optimize.UglifyJsPlugin({mangle: false})
   )
   myConfig.devtool = false
 
@@ -164,10 +157,7 @@ gulp.task("webpack:others", function (callback) {
       "process.env": {
         "NODE_ENV": JSON.stringify('production')
       }
-    }),
-    new webpack.optimize.DedupePlugin()
-//    new ngminPlugin(),
-//    new webpack.optimize.UglifyJsPlugin({mangle: false})
+    })
   )
   myConfig.devtool = false
 
@@ -183,7 +173,10 @@ gulp.task("webpack:others", function (callback) {
   })
 })
 
-gulp.task('translate', ['translate:compile'])
+gulp.task('translate', function (cb) {
+  runSequence('translate:extract', 'translate:push', 'translate:pull',
+    'translate:compile', cb)
+})
 
 gulp.task('jade', function (cb) {
   return gulp.src([
@@ -210,7 +203,7 @@ gulp.task('translate:extract', ['jade'], function (cb) {
     .pipe(gulp.dest('./res/common/lang/po/'))
 })
 
-gulp.task('translate:compile', ['translate:pull'], function (cb) {
+gulp.task('translate:compile', function (cb) {
   return gulp.src('./res/common/lang/po/**/*.po')
     .pipe(gettext.compile({
       format: 'json'
@@ -218,13 +211,13 @@ gulp.task('translate:compile', ['translate:pull'], function (cb) {
     .pipe(gulp.dest('./res/common/lang/translations/'))
 })
 
-gulp.task('translate:push', ['translate:extract'], function () {
+gulp.task('translate:push', function () {
   gutil.log('Pushing translation source to Transifex...')
 
   return run('tx push -s').exec()
 })
 
-gulp.task('translate:pull', ['translate:push'], function () {
+gulp.task('translate:pull', function () {
   gutil.log('Pulling translations from Transifex...')
 
   return run('tx pull').exec()

@@ -1,6 +1,6 @@
 .navbar.stf-menu(ng-controller='MenuCtrl')
   .container-fluid.stf-top-bar
-    a.stf-logo(href="/") STF 2
+    a.stf-logo(ng-href="/#!/devices") STF
     ul.nav.stf-nav(nav-menu='current').unselectable
       li(ng-cloak)
         a(ng-href='/#!/control/{{lastUsedDevice}}', ng-show='lastUsedDevice')
@@ -17,36 +17,6 @@
         .btn-group
           button(type='button', ng-model='$root.platform', btn-radio="'web'", translate).btn.btn-sm.btn-default-outline Web
           button(type='button', ng-model='$root.platform', btn-radio="'native'", translate).btn.btn-sm.btn-default-outline Native
-      //li(ng-if='!$root.basicMode')
-        a(ng-click='openChat()').pointer
-          i.fa.fa-comment.fa-fw
-          | {{ "Chat" | translate }}
-
-      //li
-        a
-          badge-icon(type='warning', message='There was an error')
-
-      //button.btn.btn-sm.btn-primary-outline(type='button', dropdown-toggle)
-        i.fa.fa-columns
-        span(ng-bind='"Customize"|translate')
-
-      //ul.dropdown-menu(role='menu').pointer.stf-device-details-customize
-
-      //li.dropdown.notifications.hidden-xs(dropdown, style='z-index: 11000;')
-        a(href='#', dropdown-toggle)
-          span.se7en-flag
-          .sr-only Notifications
-          p.counter 4
-        ul.dropdown-menu(role='menu')
-          li
-            a(href='')
-              .notifications.label.label-info New
-            p New device added: Nexus 6
-          li
-            a(href='#')
-              .notifications.label.label-info Bug fix
-            p Devices now don't turn off
-
 
       li(ng-show='!$root.basicMode')
         a(ng-href='/#!/help', accesskey='6')
